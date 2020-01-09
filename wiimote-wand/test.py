@@ -1,6 +1,6 @@
 import cwiid 
 import time
-from playsound import playsound
+import pygame
 
 OFFSET = -120.0
 GAIN = 1.0/24.0
@@ -14,6 +14,7 @@ print("Press 1+2 on your Wiimote now...")
 
 wm = None
 i = 1
+pygame.mixer.init()
 
 '''Connect to Wiimote'''
 while not wm:
@@ -40,7 +41,12 @@ while True:
     print('x: {0:.2f}'.format(acc[0]))
     print('y: {0:.2f}'.format(acc[1]))
     print('z: {0:.2f}'.format(acc[2]))
-    wm.rumble = (acc[1] > 0.2)
+    wm.rumble = False
+    if acc[1] > 0.2:
+        wm.rumble = True
+        if pygame.mixer.music.get_busy() == False:
+            pygame.mixer.music.load("audio/clapping.wav")
+            pygame.mixer.music.play()
     if wm.state['buttons'] & cwiid.BTN_A:
         wm.led = (wm.state['led'] + 1) % 16
     time.sleep(.2)
