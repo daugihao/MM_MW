@@ -1,11 +1,21 @@
 import cwiid 
-import time 
+import time
+from playsound import playsound
+
+OFFSET = -120.0
+GAIN = 1.0/24.0
+
+
+def convertAcc(raw):
+    return tuple([GAIN*(axis + OFFSET) for axis in raw])
+
 
 print("Press 1+2 on your Wiimote now...")
 
 wm = None
-i = 2
+i = 1
 
+'''Connect to Wiimote'''
 while not wm:
     try:
         wm=cwiid.Wiimote()
@@ -18,33 +28,20 @@ while not wm:
         i += 1
 
 print("Successfully connected to Wiimote!")
+wm.led = 9  # Show successful connection on Wiimote 
 
+'''Configure Wiimote'''
 wm.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC
-time.sleep(5)
+time.sleep(1)  # Wait for configuration to be accepted and true values are returned
 
-wm.led = 1
-
+'''Main loop'''
 while True:
-    x = (wm.state['acc'][0]-120)/24.0
-    y = (wm.state['acc'][1]-120)/24.0
-    z = (wm.state['acc'][2]-120)/24.0
-    print('x: {0:.2f}'.format(x))
-    print('y: {0:.2f}'.format(y))
-    print('z: {0:.2f}'.format(z))
-    #wm.rumble = (wm.state['acc'][0] < 126)
+    acc = convertAcc(wm.state['acc'])
+    print('x: {0:.2f}'.format(acc[0]))
+    print('y: {0:.2f}'.format(acc[1]))
+    print('z: {0:.2f}'.format(acc[2]))
+    wm.rumble = (acc[1] > 0.2)
     if wm.state['buttons'] & cwiid.BTN_A:
         wm.led = (wm.state['led'] + 1) % 16
     time.sleep(.2)
 
-'''while(True):
-    print(wm.state)
-    time.sleep(1)'''
-
-'''for i in range(16):
-    wm.led = i
-    if i%3:
-        wm.rumble = False
-    else:
-        wm.rumble = True
-    time.sleep(0.5)
-wm.rumble = False'''
