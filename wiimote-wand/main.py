@@ -3,6 +3,7 @@ import time
 import pygame
 
 from accel import convertAcc
+from effects import Effect
 
 
 '''Connect to Wiimote'''
@@ -30,7 +31,7 @@ wm.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC
 time.sleep(1)  # Wait for configuration to be accepted and true values are returned
 
 '''Set up Audio'''
-pygame.mixer.init()
+effect = Effect()
 
 '''Main loop'''
 while True:
@@ -41,9 +42,8 @@ while True:
     wm.rumble = False
     if acc[1] > 45:
         wm.rumble = True
-        if pygame.mixer.music.get_busy() == False:
-            pygame.mixer.music.load("audio/bubbles.wav")
-            pygame.mixer.music.play()
+        if not effect.busy():
+            effect.sound("audio/bubbles.wav")
     if wm.state['buttons'] & cwiid.BTN_A:
         wm.led = (wm.state['led'] + 1) % 16
     time.sleep(.2)
