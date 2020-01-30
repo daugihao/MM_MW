@@ -1,3 +1,4 @@
+import os
 import time
 
 from math import sqrt
@@ -6,9 +7,14 @@ from accel import convertAcc
 from wii import Wiimote
 from effects import Effect
 
+dirname = os.path.dirname(__file__)
+
 '''Set up Audio'''
-wiimote = Wiimote()
 effect = Effect()
+effect.sound(os.path.join(dirname, "audio/drip.wav"))
+wiimote = Wiimote()
+effect.sound(os.path.join(dirname, "audio/drip.wav"))
+time.sleep(5)
 
 state = 0
 
@@ -25,35 +31,35 @@ while True:
         if angles[1] > 45:
            wiimote.rumble(True)
            if not effect.busy():
-               effect.sound("audio/bubble.wav")
+               effect.sound(os.path.join(dirname, "audio/bubble.wav"))
                state += 1
     
     if state == 1:
         if accMag > 3:
             wiimote.rumble(True)
             if not effect.busy():
-                effect.sound("audio/bell2.wav")
+                effect.sound(os.path.join(dirname, "audio/bell2.wav"))
                 state += 1
 
     if state == 2:
         if angles[0] > 45:
             wiimote.rumble(True)
             if not effect.busy():
-                effect.sound("audio/bubble.wav")
+                effect.sound(os.path.join(dirname, "audio/bubble.wav"))
                 state += 1
     
     if state == 3:
         if accMag > 3:
             wiimote.rumble(True)
             if not effect.busy():
-                effect.sound("audio/bell2.wav")
+                effect.sound(os.path.join(dirname, "audio/bell2.wav"))
                 state += 1
 
     if state == 4:
         if angles[1] < -80:
             wiimote.rumble(True)
             if not effect.busy():
-                effect.sound("audio/bubbles.wav")
+                effect.sound(os.path.join(dirname, "audio/bubbles.wav"))
                 state = 0
 
     time.sleep(.2)
