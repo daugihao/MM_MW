@@ -1,4 +1,5 @@
 import os
+import RPi.GPIO as GPIO
 import time
 
 from math import sqrt
@@ -7,14 +8,21 @@ from accel import convertAcc
 from wii import Wiimote
 from effects import Effect
 
+PIN_MAGLOCK = 17
+
 dirname = os.path.dirname(__file__)
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setup(PIN_MAGLOCK, GPIO.OUT)
+GPIO.output(PIN_MAGLOCK, GPIO.HIGH)
+
 
 '''Set up Audio'''
 effect = Effect()
 effect.sound(os.path.join(dirname, "audio/drip.wav"))
 wiimote = Wiimote()
 effect.sound(os.path.join(dirname, "audio/drip.wav"))
-time.sleep(5)
+time.sleep(1)
 
 state = 0
 
@@ -28,6 +36,7 @@ while True:
     print('Mag: {0:.2f}'.format(accMag))
 
     if state == 0:
+        GPIO.output(PIN_MAGLOCK, GPIO.HIGH)
         if angles[1] > 45:
            wiimote.rumble(True)
            if not effect.busy():
@@ -60,7 +69,14 @@ while True:
             wiimote.rumble(True)
             if not effect.busy():
                 effect.sound(os.path.join(dirname, "audio/bubbles.wav"))
-                state = 0
+                state = 5
+            
+    if state == 5:
+        GPIO.output(PIN_MAGLOCK, GPIO.LOW)
+        time.sleep(1)
+        wiimote.rumble(False)
+        time.sleep(30)
+        state = 0
 
     time.sleep(.2)
     wiimote.rumble(False)

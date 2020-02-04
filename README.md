@@ -1,6 +1,7 @@
 https://desertbot.io/blog/headless-pi-zero-w-wifi-setup-windows
 
-applepi
+applepi.local (PUTTY)
+pi
 b3edef126p
 
 sudo apt-get install git
